@@ -34,10 +34,10 @@ jobs:
   build_image:
     name: Build metal image
     needs: setup_build_environment
-    runs-on: docker://proum/terraform:v0.13.4-gcloud
+    runs-on: proum/terraform:v0.13.4-gcloud
     steps:
       - name: Build image
-        runs: bash ci/scripts/build-coreos.sh
+        run: bash ci/scripts/build-coreos.sh
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
