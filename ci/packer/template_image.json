@@ -1,0 +1,43 @@
+{
+    "variables": {
+      "hcloud_token": "{{env `HCLOUD_TOKEN`}}",
+      "hcloud_snapshot_name": "{{env `HCLOUD_SNAPSHOT_NAME`}}",
+      "hcloud_base_image": "{{env `HCLOUD_BASE_IMAGE`}}",
+      "stream": "{{env `STREAM`}}"
+    },
+    "builders": [
+      {
+        "type": "hcloud",
+        "token": "{{user `hcloud_token`}}",
+        "image": "{{user `hcloud_base_image`}}",
+        "rescue": "linux64",
+        "location": "nbg1",
+        "server_type": "cx11",
+        "ssh_username": "root",
+        "snapshot_name": "{{user `hcloud_snapshot_name`}}",
+        "ssh_keys": "hauke",
+        "snapshot_labels": {
+            "maintainer": "proum",
+            "type": "coreos",
+            "stream": "{{ user `stream` }}"
+        }
+      }
+    ],
+    "provisioners": [
+      {
+        "type": "file",
+        "source": "files/",
+        "destination": "/tmp"
+      },
+      {
+        "type": "shell",
+        "environment_vars": [
+          "STREAM={{ user `stream` }}",
+          "IGNITION_FILE=/tmp/ignition.json"
+        ],
+        "scripts": [
+          "scripts/install.sh"
+        ]
+      }
+    ]
+  }

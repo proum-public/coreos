@@ -1,0 +1,10 @@
+# IDE
+.idea
+
+# Terraform
+**/.terraform
+**/*.tfstate
+**/*.tfvars
+
+# Build
+builds
