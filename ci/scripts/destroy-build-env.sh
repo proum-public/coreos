@@ -59,6 +59,11 @@ fi
 # Apply terraform
 cd ${TERRAFORM_CONFIG}
 
+# Init terraform
 terraform init
 
+# Create or select run workspace
+terraform workspace select "run-${RUN_ID}" || terraform workspace new "run-${RUN_ID}"
+
+# Destroy
 terraform destroy -auto-approve

@@ -65,4 +65,5 @@ terraform init
 # Create or select run workspace
 terraform workspace select "run-${RUN_ID}" || terraform workspace new "run-${RUN_ID}"
 
+# Create
 terraform apply -auto-approve
