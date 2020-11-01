@@ -27,11 +27,13 @@ jobs:
 
       - name: Perform Terraform apply in CI script
         uses: docker://proum/terraform:v0.13.4-gcloud
-        run: bash ci/scripts/create-build-env.sh
+        with:
+          entrypoint: /bin/bash
+          args: bash ci/scripts/destroy-build-env.sh
 
   destroy_build_environment:
     name: Destroy build environment on gcloud
-    runs-on: proum/terraform:v0.13.4-gcloud
+    runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
         uses: actions/checkout@v2
@@ -45,4 +47,6 @@ jobs:
 
       - name: Perform Terraform apply in CI script
         uses: docker://proum/terraform:v0.13.4-gcloud
-        run: bash ci/scripts/destroy-build-env.sh
+        with:
+          entrypoint: /bin/bash
+          args: bash ci/scripts/destroy-build-env.sh
