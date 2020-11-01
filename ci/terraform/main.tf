@@ -29,7 +29,7 @@ data "google_compute_image" "assembler-image" {
 }
 
 resource "google_compute_instance" "assembler" {
-  name         = "proum-coreos-assembler"
+  name         = "proum-coreos-assembler-${terraform. workspace}"
 
   min_cpu_platform = var.min_cpu_platform
   machine_type     = var.machine_type

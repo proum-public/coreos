@@ -20,11 +20,14 @@ function usage() {
   echo "                                (default: '\${PWD}/fcos') (ENV: WORKING_DIR)"
   echo "        -a --assemble-script:   Path to assemble script"
   echo "                                (default: ${DEFAULT_ASSEMBLE_SCRIPT}) (ENV: ASSEMBLE_SCRIPT)"
+  echo "        -r --run-id:            ID of run (e.g. Github actions run id)"
+  echo "                                (required) (ENV: RUN_ID)"
   echo ""
   echo "environment variables:"
   echo "        CONFIG_REPO:            URL to git repository with fedora coreos config (required)"
   echo "        WORKING_DIR:            Path to cosa config (default: '\${PWD}/fcos')"
   echo "        ASSEMBLE_SCRIPT:        Path to assemble script (default: ${DEFAULT_ASSEMBLE_SCRIPT})"
+  echo "        RUN_ID:                 ID of run (e.g. Github actions run id) (required)"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -70,16 +73,22 @@ if [[ -z ${ASSEMBLE_SCRIPT} ]]; then
     export ASSEMBLE_SCRIPT="${DEFAULT_ASSEMBLE_SCRIPT}"
 fi
 
+if [[ -z ${RUN_ID} ]]; then
+    echo "RUN_ID not defined!"
+    usage
+    exit 1
+fi
+
 # Make build dir
 mkdir -p builds
 
 # Copy assemble script to build node
 echo "Copying assemble script to build node..."
-gcloud compute scp "${DEFAULT_ASSEMBLE_SCRIPT}" proum-coreos-assembler:
+gcloud compute scp "${DEFAULT_ASSEMBLE_SCRIPT}" "proum-coreos-assembler-${RUN_ID}:"
 
 # Start build script
 echo "Starting assembler script..."
-gcloud compute ssh proum-coreos-assembler -- "bash assemble.sh --config-repo ${CONFIG_REPO} --working-dir ${WORKING_DIR}"
+gcloud compute ssh "proum-coreos-assembler-${RUN_ID}:" -- "bash assemble.sh --config-repo ${CONFIG_REPO} --working-dir ${WORKING_DIR}"
 
 # Copy final archive
-gcloud compute scp proum-coreos-assembler:/tmp/proum-fedora-coreos.tar.xz builds/
+gcloud compute scp "proum-coreos-assembler-${RUN_ID}:/tmp/proum-fedora-coreos.tar.xz" builds/

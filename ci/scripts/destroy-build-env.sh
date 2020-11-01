@@ -14,9 +14,12 @@ function usage() {
   echo ""
   echo "        -c --terraform-config:  Path to terraform config directory"
   echo "                                (default: ci/terraform) (ENV: TERRAFORM_CONFIG)"
+  echo "        -r --run-id:            ID of run (e.g. Github actions run id)"
+  echo "                                (required) (ENV: RUN_ID)"
   echo ""
   echo "environment variables:"
   echo "        TERRAFORM_CONFIG:       Path to terraform config (default: ci/terraform)"
+  echo "        RUN_ID:                 ID of run (e.g. Github actions run id) (required)"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -32,6 +35,11 @@ while [[ $# -gt 0 ]]; do
         usage
         exit 0
         ;;
+        --run-id|-r)
+        export RUN_ID="$2"
+        shift
+        shift
+        ;;
         *)
         shift
         shift
@@ -40,6 +48,12 @@ done
 
 if [[ -z ${TERRAFORM_CONFIG} ]]; then
     export TERRAFORM_CONFIG=ci/terraform
+fi
+
+if [[ -z ${RUN_ID} ]]; then
+    echo "RUN_ID not defined!"
+    usage
+    exit 1
 fi
 
 # Apply terraform

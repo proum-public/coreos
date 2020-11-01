@@ -29,7 +29,7 @@ jobs:
         uses: docker://proum/terraform:v0.13.4-gcloud
         with:
           entrypoint: ""
-          args: bash ci/scripts/create-build-env.sh
+          args: bash ci/scripts/create-build-env.sh --run-id ${GITHUB_RUN_ID}
 
   build_image:
     name: Build metal image
@@ -40,7 +40,7 @@ jobs:
         uses: docker://proum/terraform:v0.13.4-gcloud
         with:
           entrypoint: ""
-          args: bash ci/scripts/build-coreos.sh
+          args: bash ci/scripts/build-coreos.sh --run-id ${GITHUB_RUN_ID}
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v2
@@ -70,4 +70,4 @@ jobs:
         uses: docker://proum/terraform:v0.13.4-gcloud
         with:
           entrypoint: ""
-          args: bash ci/scripts/destroy-build-env.sh
+          args: bash ci/scripts/destroy-build-env.sh --run-id ${GITHUB_RUN_ID}

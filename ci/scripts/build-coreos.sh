@@ -19,11 +19,14 @@ function usage() {
   echo "                                (default: ${DEFAULT_CONFIG_REPO}) (ENV: CONFIG_REPO)"
   echo "        -c --cosa-config:       Path to cosa config directory"
   echo "                                (default: ${DEFAULT_COSA_CONFIG}) (ENV: COSA_CONFIG)"
+  echo "        -r --run-id:            ID of run (e.g. Github actions run id)"
+  echo "                                (required) (ENV: RUN_ID)"
   echo ""
   echo "environment variables:"
   echo "        CONFIG_REPO:            URL to git repository with fedora coreos config"
   echo "                                (default: ${DEFAULT_CONFIG_REPO}"
   echo "        COSA_CONFIG:            Path to cosa config (default: ${DEFAULT_COSA_CONFIG})"
+  echo "        RUN_ID:                 ID of run (e.g. Github actions run id) (required)"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -37,6 +40,11 @@ while [[ $# -gt 0 ]]; do
         ;;
         --cosa-config|-c)
         export COSA_CONFIG="$2"
+        shift
+        shift
+        ;;
+        --run-id|-r)
+        export RUN_ID="$2"
         shift
         shift
         ;;
@@ -56,6 +64,12 @@ fi
 
 if [[ -z ${COSA_CONFIG} ]]; then
     export COSA_CONFIG="${SCRIPT_DIR}/../cosa"
+fi
+
+if [[ -z ${RUN_ID} ]]; then
+    echo "RUN_ID not defined!"
+    usage
+    exit 1
 fi
 
 # Build image
