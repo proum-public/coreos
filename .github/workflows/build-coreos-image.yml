@@ -36,6 +36,9 @@ jobs:
     needs: setup_build_environment
     runs-on: ubuntu-latest
     steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+
       - name: Build image
         uses: docker://proum/terraform:v0.13.4-gcloud
         with:
