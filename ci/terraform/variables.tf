@@ -25,5 +25,5 @@ variable "min_cpu_platform" {
 variable "machine_type" {
   type        = string
   description = "GCP Machine Type"
-  default     = "c2-standard-8"
+  default     = "c2-standard-4"
 }
