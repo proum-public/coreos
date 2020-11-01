@@ -50,7 +50,10 @@ jobs:
 
   destroy_build_environment:
     name: Destroy build environment on gcloud
-    needs: build_image
+    needs:
+      - setup_build_environment
+      - build_image
+    if: "always()"
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
