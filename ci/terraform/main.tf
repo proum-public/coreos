@@ -37,6 +37,8 @@ resource "google_compute_instance" "assembler" {
   zone             = var.gcp_zone
   project          = data.google_project.assembler.project_id
 
+  allow_stopping_for_update = true
+
   boot_disk {
     initialize_params {
       image = data.google_compute_image.assembler-image.id
