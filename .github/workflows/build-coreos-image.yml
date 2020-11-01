@@ -31,9 +31,23 @@ jobs:
           entrypoint: ""
           args: bash ci/scripts/create-build-env.sh
 
+  build_image:
+    name: Build metal image
+    needs: setup_build_environment
+    runs-on: docker://proum/terraform:v0.13.4-gcloud
+    steps:
+      - name: Build image
+        runs: bash ci/scripts/build-coreos.sh
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: images
+          path: builds/*
+
   destroy_build_environment:
     name: Destroy build environment on gcloud
-    needs: setup_build_environment
+    needs: build_image
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
