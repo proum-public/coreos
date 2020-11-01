@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-set -xeo pipefail
+set -eo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" ; pwd -P)"
-TERM=xterm
 
 # check prerequisites
-for cmd in packer
+for cmd in gcloud
 do
     command -v ${cmd} > /dev/null || {  echo >&2 "${cmd} must be installed - exiting..."; exit 1; }
 done
@@ -13,19 +12,27 @@ done
 function usage() {
   echo "usage: $0"
   echo ""
-  echo "        -c --packer-config:     Path to packer config directory"
-  echo "                                (default: ci/packer) (ENV: PACKER_CONFIG)"
+  echo "        -c --config-repo:       URL to git repository with fedora coreos config"
+  echo "                                (required) (ENV: CONFIG_REPO)"
+  echo "        -c --cosa-config:       Path to cosa config directory"
+  echo "                                (default: ci/cosa) (ENV: COSA_CONFIG)"
   echo ""
   echo "environment variables:"
-  echo "        PACKER_CONFIG:          Path to packer config (default: ci/packer)"
+  echo "        CONFIG_REPO:            URL to git repository with fedora coreos config (required)"
+  echo "        COSA_CONFIG:            Path to cosa config (default: ci/cosa)"
 }
 
 while [[ $# -gt 0 ]]; do
     key="$1"
 
     case $key in
-        --packer-config|-c)
-        export PACKER_CONFIG="$2"
+        --config-repo|-c)
+        export CONFIG_REPO="$2"
+        shift
+        shift
+        ;;
+        --cosa-config|-c)
+        export COSA_CONFIG="$2"
         shift
         shift
         ;;
@@ -39,10 +46,15 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [[ -z ${PACKER_CONFIG} ]]; then
-    export PACKER_CONFIG=ci/packer
+if [[ -z ${CONFIG_REPO} ]]; then
+    echo "CONFIG not set!"
+    usage
+    exit 1
+fi
+
+if [[ -z ${COSA_CONFIG} ]]; then
+    export COSA_CONFIG=ci/cosa
 fi
 
 # Build image
-cd "${PACKER_CONFIG}" \
-  && find . -maxdepth 1 -name '*.json' -print0 | xargs -t0n1 packer build -force
+bash ${COSA_CONFIG}/build.sh -c "${CONFIG_REPO}"

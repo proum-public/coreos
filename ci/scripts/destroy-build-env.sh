@@ -43,5 +43,6 @@ if [[ -z ${TERRAFORM_CONFIG} ]]; then
 fi
 
 # Apply terraform
-cd ${TERRAFORM_CONFIG} \
-  terraform apply
+cd ${TERRAFORM_CONFIG}
+
+terraform destroy -auto-approve

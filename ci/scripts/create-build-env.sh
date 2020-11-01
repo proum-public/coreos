@@ -4,7 +4,7 @@ set -eo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" ; pwd -P)"
 
 # check prerequisites
-for cmd in gcloud
+for cmd in terraform
 do
     command -v ${cmd} > /dev/null || {  echo >&2 "${cmd} must be installed - exiting..."; exit 1; }
 done
@@ -12,27 +12,19 @@ done
 function usage() {
   echo "usage: $0"
   echo ""
-  echo "        -c --config-repo:       URL to git repository with fedora coreos config"
-  echo "                                (required) (ENV: CONFIG_REPO)"
-  echo "        -c --cosa-config:       Path to cosa config directory"
-  echo "                                (default: ci/cosa) (ENV: COSA_CONFIG)"
+  echo "        -c --terraform-config:  Path to terraform config directory"
+  echo "                                (default: ci/terraform) (ENV: TERRAFORM_CONFIG)"
   echo ""
   echo "environment variables:"
-  echo "        CONFIG_REPO:            URL to git repository with fedora coreos config (required)"
-  echo "        COSA_CONFIG:            Path to cosa config (default: ci/cosa)"
+  echo "        TERRAFORM_CONFIG:       Path to terraform config (default: ci/terraform)"
 }
 
 while [[ $# -gt 0 ]]; do
     key="$1"
 
     case $key in
-        --config-repo|-c)
-        export CONFIG_REPO="$2"
-        shift
-        shift
-        ;;
-        --cosa-config|-c)
-        export COSA_CONFIG="$2"
+        --terraform-config|-c)
+        export TERRAFORM_CONFIG="$2"
         shift
         shift
         ;;
@@ -46,15 +38,11 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-if [[ -z ${CONFIG_REPO} ]]; then
-    echo "CONFIG not set!"
-    usage
-    exit 1
+if [[ -z ${TERRAFORM_CONFIG} ]]; then
+    export TERRAFORM_CONFIG=ci/terraform
 fi
 
-if [[ -z ${COSA_CONFIG} ]]; then
-    export COSA_CONFIG=ci/cosa
-fi
+# Apply terraform
+cd ${TERRAFORM_CONFIG}
 
-# Build image
-bash ${COSA_CONFIG}/build.sh -c "${CONFIG_REPO}"
+terraform apply -auto-approve

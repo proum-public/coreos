@@ -29,7 +29,7 @@ jobs:
         uses: docker://proum/terraform:v0.13.4-gcloud
         with:
           entrypoint: ""
-          args: bash ci/scripts/destroy-build-env.sh
+          args: bash ci/scripts/setup-build-env.sh
 
   destroy_build_environment:
     name: Destroy build environment on gcloud
