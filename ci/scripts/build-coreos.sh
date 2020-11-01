@@ -3,6 +3,9 @@ set -eo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" ; pwd -P)"
 
+DEFAULT_COSA_CONFIG="${SCRIPT_DIR}/../cosa"
+DEFAULT_CONFIG_REPO="https://github.com/proum-public/fedora-coreos-config"
+
 # check prerequisites
 for cmd in gcloud
 do
@@ -13,13 +16,14 @@ function usage() {
   echo "usage: $0"
   echo ""
   echo "        -c --config-repo:       URL to git repository with fedora coreos config"
-  echo "                                (required) (ENV: CONFIG_REPO)"
+  echo "                                (default: ${DEFAULT_CONFIG_REPO}) (ENV: CONFIG_REPO)"
   echo "        -c --cosa-config:       Path to cosa config directory"
-  echo "                                (default: ci/cosa) (ENV: COSA_CONFIG)"
+  echo "                                (default: ${DEFAULT_COSA_CONFIG}) (ENV: COSA_CONFIG)"
   echo ""
   echo "environment variables:"
-  echo "        CONFIG_REPO:            URL to git repository with fedora coreos config (required)"
-  echo "        COSA_CONFIG:            Path to cosa config (default: ci/cosa)"
+  echo "        CONFIG_REPO:            URL to git repository with fedora coreos config"
+  echo "                                (default: ${DEFAULT_CONFIG_REPO}"
+  echo "        COSA_CONFIG:            Path to cosa config (default: ${DEFAULT_COSA_CONFIG})"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -47,13 +51,11 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z ${CONFIG_REPO} ]]; then
-    echo "CONFIG not set!"
-    usage
-    exit 1
+    export CONFIG_REPO="${DEFAULT_CONFIG_REPO}"
 fi
 
 if [[ -z ${COSA_CONFIG} ]]; then
-    export COSA_CONFIG=ci/cosa
+    export COSA_CONFIG="${SCRIPT_DIR}/../cosa"
 fi
 
 # Build image

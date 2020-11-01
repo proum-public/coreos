@@ -45,4 +45,6 @@ fi
 # Apply terraform
 cd ${TERRAFORM_CONFIG}
 
+terraform init
+
 terraform apply -auto-approve

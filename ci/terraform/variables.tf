@@ -4,18 +4,26 @@ variable "gcp_region" {
   default     = "europe-west1"
 }
 
+variable "gcp_zone" {
+  type        = string
+  description = "Zone in GCP region"
+  default     = "europe-west1-b"
+}
+
 variable "gcp_project" {
   type        = string
   description = "GCP project name"
+  default     = "proum-coreos-assemble"
 }
 
-variable "gcp_auth_file" {
+variable "min_cpu_platform" {
   type        = string
-  description = "GCP authentication file"
+  description = "Minimum CPU platform"
+  default     = "cascadelake"
 }
 
-variable "storage-class" {
+variable "machine_type" {
   type        = string
-  description = "The storage class of the Storage Bucket to create"
-  default     = "REGIONAL"
+  description = "GCP Machine Type"
+  default     = "c2-standard-8"
 }
