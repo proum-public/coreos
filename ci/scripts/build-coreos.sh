@@ -15,18 +15,25 @@ done
 function usage() {
   echo "usage: $0"
   echo ""
-  echo "        -c --config-repo:       URL to git repository with fedora coreos config"
-  echo "                                (default: ${DEFAULT_CONFIG_REPO}) (ENV: CONFIG_REPO)"
-  echo "        -c --cosa-config:       Path to cosa config directory"
-  echo "                                (default: ${DEFAULT_COSA_CONFIG}) (ENV: COSA_CONFIG)"
-  echo "        -r --run-id:            ID of run (e.g. Github actions run id)"
-  echo "                                (required) (ENV: RUN_ID)"
+  echo "        -c --config-repo:               URL to git repository with fedora coreos config"
+  echo "                                        (default: ${DEFAULT_CONFIG_REPO}) (ENV: CONFIG_REPO)"
+  echo ""
+  echo "        -c --cosa-config:               Path to cosa config directory"
+  echo "                                        (default: ${DEFAULT_COSA_CONFIG}) (ENV: COSA_CONFIG)"
+  echo ""
+  echo "        -r --run-id:                    ID of run (e.g. Github actions run id)"
+  echo "                                        (required) (ENV: RUN_ID)"
+  echo ""
+  echo "        -p --gcp-project:               Google cloud project"
+  echo "                                        (default: proum-coreos-assemble) (ENV: GCP_PROJECT)"
   echo ""
   echo "environment variables:"
-  echo "        CONFIG_REPO:            URL to git repository with fedora coreos config"
-  echo "                                (default: ${DEFAULT_CONFIG_REPO}"
-  echo "        COSA_CONFIG:            Path to cosa config (default: ${DEFAULT_COSA_CONFIG})"
-  echo "        RUN_ID:                 ID of run (e.g. Github actions run id) (required)"
+  echo "        CONFIG_REPO:                    URL to git repository with fedora coreos config"
+  echo "                                        (default: ${DEFAULT_CONFIG_REPO}"
+  echo "        COSA_CONFIG:                    Path to cosa config (default: ${DEFAULT_COSA_CONFIG})"
+  echo "        RUN_ID:                         ID of run (e.g. Github actions run id) (required)"
+  echo "        GOOGLE_APPLICATION_CREDENTIALS: GCP application credentials (required)"
+  echo "        GCP_PROJECT:                    GCP project (default: proum-coreos-assemble)"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -45,6 +52,11 @@ while [[ $# -gt 0 ]]; do
         ;;
         --run-id|-r)
         export RUN_ID="$2"
+        shift
+        shift
+        ;;
+        --gcp-project|-p)
+        export GCP_PROJECT="$2"
         shift
         shift
         ;;
@@ -71,6 +83,26 @@ if [[ -z ${RUN_ID} ]]; then
     usage
     exit 1
 fi
+
+if [[ -z ${GOOGLE_APPLICATION_CREDENTIALS} ]]; then
+    echo "GOOGLE_APPLICATION_CREDENTIALS not defined!"
+    usage
+    exit 1
+fi
+
+if [[ -z ${GCP_PROJECT} ]]; then
+    export GCP_PROJECT=proum-coreos-assemble
+fi
+
+# Create temp dir
+export CLOUDSDK_CONFIG=$(pwd)/.gcloud
+mkdir -p "${CLOUDSDK_CONFIG}"
+
+# Fetch temporary access token
+gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS}
+
+# Set project
+gcloud config set project "${GCP_PROJECT}"
 
 # Build image
 bash ${COSA_CONFIG}/build.sh -c "${CONFIG_REPO}"
