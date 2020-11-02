@@ -27,6 +27,9 @@ function usage() {
   echo "        -p --gcp-project:               Google cloud project"
   echo "                                        (default: proum-coreos-assemble) (ENV: GCP_PROJECT)"
   echo ""
+  echo "        -z --zone:                      GCP zone"
+  echo "                                        (default: europe-west1-b) (ENV: GCP_ZONE)"
+  echo ""
   echo "environment variables:"
   echo "        CONFIG_REPO:                    URL to git repository with fedora coreos config"
   echo "                                        (default: ${DEFAULT_CONFIG_REPO}"
@@ -34,6 +37,7 @@ function usage() {
   echo "        RUN_ID:                         ID of run (e.g. Github actions run id) (required)"
   echo "        GOOGLE_APPLICATION_CREDENTIALS: GCP application credentials (required)"
   echo "        GCP_PROJECT:                    GCP project (default: proum-coreos-assemble)"
+  echo "        GCP_ZONE:                       GCP zone (default: europe-west1-b)"
 }
 
 while [[ $# -gt 0 ]]; do
@@ -57,6 +61,11 @@ while [[ $# -gt 0 ]]; do
         ;;
         --gcp-project|-p)
         export GCP_PROJECT="$2"
+        shift
+        shift
+        ;;
+        --zone|-z)
+        export GCP_ZONE="$2"
         shift
         shift
         ;;
@@ -94,6 +103,10 @@ if [[ -z ${GCP_PROJECT} ]]; then
     export GCP_PROJECT=proum-coreos-assemble
 fi
 
+if [[ -z ${GCP_ZONE} ]]; then
+    export GCP_ZONE=europe-west1-b
+fi
+
 # Create temp dir
 export CLOUDSDK_CONFIG=$(pwd)/.gcloud
 mkdir -p "${CLOUDSDK_CONFIG}"
@@ -105,4 +118,4 @@ gcloud auth activate-service-account --key-file=${GOOGLE_APPLICATION_CREDENTIALS
 gcloud config set project "${GCP_PROJECT}"
 
 # Build image
-bash ${COSA_CONFIG}/build.sh -c "${CONFIG_REPO}"
+bash ${COSA_CONFIG}/build.sh -c "${CONFIG_REPO}" -r "${RUN_ID}" -z "${GCP_ZONE}"
