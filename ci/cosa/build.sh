@@ -111,7 +111,7 @@ gcloud compute scp --zone "${GCP_ZONE}" "${DEFAULT_ASSEMBLE_SCRIPT}" "proum-core
 
 # Start build script
 echo "Starting assembler script..."
-gcloud compute ssh "proum-coreos-assembler-run-${RUN_ID}" --zone "${GCP_ZONE}" -- "bash assemble.sh --config-repo ${CONFIG_REPO} --working-dir ${WORKING_DIR}"
+gcloud compute ssh "proum-coreos-assembler-run-${RUN_ID}" --zone "${GCP_ZONE}" --ssh-flag="-vvv" -- "bash assemble.sh --config-repo ${CONFIG_REPO} --working-dir ${WORKING_DIR}"
 
 # Copy final archive
 echo "Copying artifact to local machine..."
