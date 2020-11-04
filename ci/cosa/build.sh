@@ -107,7 +107,7 @@ mkdir -p builds
 
 # Copy assemble script to build node
 echo "Copying assemble script to build node..."
-gcloud compute scp --zone "${GCP_ZONE}" --scp-flag="-vvv" --verbosity "${DEFAULT_ASSEMBLE_SCRIPT}" "proum-coreos-assembler-run-${RUN_ID}:"
+gcloud --verbosity compute scp --zone "${GCP_ZONE}" --scp-flag="-vvv" "${DEFAULT_ASSEMBLE_SCRIPT}" "proum-coreos-assembler-run-${RUN_ID}:"
 
 # Start build script
 echo "Starting assembler script..."
