@@ -107,12 +107,12 @@ mkdir -p builds
 
 # Copy assemble script to build node
 echo "Copying assemble script to build node..."
-gcloud --verbosity=debug compute scp --zone "${GCP_ZONE}" --scp-flag="-vvv" "${DEFAULT_ASSEMBLE_SCRIPT}" "proum-coreos-assembler-run-${RUN_ID}:"
+gcloud --verbosity=debug compute scp --zone "${GCP_ZONE}" --scp-flag="-vvv" "${DEFAULT_ASSEMBLE_SCRIPT}" "assembler@proum-coreos-assembler-run-${RUN_ID}:"
 
 # Start build script
 echo "Starting assembler script..."
-gcloud compute ssh "proum-coreos-assembler-run-${RUN_ID}" --zone "${GCP_ZONE}" --ssh-flag="-vvv" -- "bash assemble.sh --config-repo ${CONFIG_REPO} --working-dir ${WORKING_DIR}"
+gcloud compute ssh "assembler@proum-coreos-assembler-run-${RUN_ID}" --zone "${GCP_ZONE}" --ssh-flag="-vvv" -- "bash assemble.sh --config-repo ${CONFIG_REPO} --working-dir ${WORKING_DIR}"
 
 # Copy final archive
 echo "Copying artifact to local machine..."
-gcloud compute scp --zone "${GCP_ZONE}" "proum-coreos-assembler-run-${RUN_ID}:/tmp/proum-fedora-coreos.tar.xz" builds/
+gcloud compute scp --zone "${GCP_ZONE}" "assembler@proum-coreos-assembler-run-${RUN_ID}:/tmp/proum-fedora-coreos.tar.xz" builds/
